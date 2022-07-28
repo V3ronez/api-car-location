@@ -19,16 +19,6 @@ class LocationController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \App\Http\Requests\StorelocationRequest  $request
@@ -46,17 +36,6 @@ class LocationController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(location $location)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\location  $location
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(location $location)
     {
         //
     }
