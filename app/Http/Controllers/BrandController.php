@@ -32,9 +32,16 @@ class BrandController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate($this->brand->validate());
+        $request->validate($this->brand->rules());
 
-        $brand = $this->brand->create($request->all());
+        $image = $request->file('image');
+        $imageUrn = $image->store('images/', 'public');
+
+        $brand = $this->brand->create([
+            'name' => $request->name,
+            'image' => $imageUrn,
+        ]);
+
         return response()->json($brand, 201);
     }
 
@@ -63,10 +70,32 @@ class BrandController extends Controller
     public function update(Request $request, $id)
     {
         $brand = $this->brand->find($id);
+
         if ($brand === null) {
             return response()->json(['Erro' => 'User not found'], 404);
         }
-        $brand->update($request->all());
+
+        if ($request->method() === 'PATCH') {
+            $dinamicRules = array();
+
+            foreach ($brand->rules() as $key => $rules) {
+                if (array_key_exists($key, $request->all())) {
+                    $dinamicRules[$key] = $rules;
+                }
+            }
+            $request->validate($dinamicRules);
+
+        } else {
+            $request->validate($brand->rules());
+        }
+
+        $image = $request->file('image');
+        $imageUrn = $image->store('images', 'public');
+
+        $brand->update([
+            'name' => $request->name,
+            'image' => $imageUrn,
+        ]);
 
         return response()->json($brand, 200);
     }
