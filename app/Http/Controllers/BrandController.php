@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Brand;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class BrandController extends Controller
 {
+    protected $brand;
 
     public function __construct(Brand $brand)
     {
@@ -20,7 +22,7 @@ class BrandController extends Controller
      */
     public function index()
     {
-        $brands = $this->brand->all();
+        $brands = $this->brand->with('carModel')->get();
         return response()->json($brands, 200);
     }
 
@@ -35,14 +37,14 @@ class BrandController extends Controller
         $request->validate($this->brand->rules());
 
         $image = $request->file('image');
-        $imageUrn = $image->store('images/', 'public');
+        $imageUrn = $image->store('images', 'public');
 
         $brand = $this->brand->create([
             'name' => $request->name,
             'image' => $imageUrn,
         ]);
 
-        return response()->json($brand, 201);
+        return response()->json(['Success' => true, 'brand' => $brand], 200);
     }
 
     /**
@@ -53,9 +55,9 @@ class BrandController extends Controller
      */
     public function show($id)
     {
-        $brand = $this->brand->find($id);
+        $brand = $this->brand->with('carModel')->find($id);
         if ($brand === null) {
-            return response()->json(['Erro' => 'User not found'], 404);
+            return response()->json(['Erro' => 'Brand not found'], 404);
         }
         return response()->json($brand, 200);
     }
@@ -72,15 +74,15 @@ class BrandController extends Controller
         $brand = $this->brand->find($id);
 
         if ($brand === null) {
-            return response()->json(['Erro' => 'User not found'], 404);
+            return response()->json(['Erro' => 'Brand not found'], 404);
         }
 
         if ($request->method() === 'PATCH') {
             $dinamicRules = array();
 
-            foreach ($brand->rules() as $key => $rules) {
-                if (array_key_exists($key, $request->all())) {
-                    $dinamicRules[$key] = $rules;
+            foreach ($brand->rules() as $input => $rules) {
+                if (array_key_exists($input, $request->all())) {
+                    $dinamicRules[$input] = $rules;
                 }
             }
             $request->validate($dinamicRules);
@@ -89,15 +91,19 @@ class BrandController extends Controller
             $request->validate($brand->rules());
         }
 
-        $image = $request->file('image');
-        $imageUrn = $image->store('images', 'public');
+        if ($request->file('image')) {
+            //remove old image
+            Storage::disk('public')->delete($brand->image);
+            $image = $request->file('image');
+            $imageUrn = $image->store('images', 'public');
+        }
 
-        $brand->update([
-            'name' => $request->name,
-            'image' => $imageUrn,
-        ]);
+        $brand->fill($request->all());
+        $request->file('image') ? $imageUrn : '';
 
-        return response()->json($brand, 200);
+        $brand->save();
+
+        return response()->json(['Success' => true, $brand], 200);
     }
 
     /**
@@ -109,11 +115,21 @@ class BrandController extends Controller
     public function destroy($id)
     {
         $brand = $this->brand->find($id);
+
         if ($brand === null) {
-            return response()->json(['Erro' => 'User not found'], 404);
+            return response()->json(['Erro' => 'Brand not found'], 404);
         }
+
+        //remove old image
+        Storage::disk('public')->delete($brand->image);
         $brand->delete();
 
-        return response()->json(['Ok' => 'User deleted successfully'], 200);
+        return response()->json([
+            'Ok' => 'Brand deleted successfully',
+            'Brand' => [
+                'id' => $brand->id,
+                'name' => $brand->name,
+            ],
+        ], 200);
     }
 }

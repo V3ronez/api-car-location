@@ -17,4 +17,8 @@ class Brand extends Model
             'image' => 'required|file|mimes:png,jpg,jpeg',
         ];
     }
+    public function carModel()
+    {
+        return $this->hasMany('App\Models\CarModel');
+    }
 }
