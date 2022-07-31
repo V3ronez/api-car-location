@@ -22,16 +22,39 @@ class CarModelController extends Controller
     public function index(Request $request)
     {
 
-        $params = array();
+        $parameters = array();
 
-        if ($request->has('params')) {
-            $params = explode(',', $request->get('params'));
-            $carModel = $this->carModel->select($params)->get();
+        //get attr to brand
+        if ($request->has('attribute_brand')) {
+            //pegando param do uri
+            $attribute_brand = $request->attribute_brand;
+            $parameters = $this->carModel->with('brand:id,' . $attribute_brand);
+
         } else {
-            $carModel = $this->carModel->with('brand')->get();
+            $parameters = $this->carModel->with('brand');
         }
 
-        return response()->json($carModel, 200);
+        //multiple filter search
+        if ($request->has('filter')) {
+
+            $filter = explode(';', $request->filter);
+            foreach ($filter as $key => $value) {
+                $condition = explode(':', $value);
+                $parameters = $parameters->where($condition[0], $condition[1], $condition[2]);
+            }
+
+        }
+
+        //get params from attr to CarModel;
+        if ($request->has('params')) {
+            $params = $request->params;
+            $parameters = $parameters->selectRaw($params)->get();
+
+        } else {
+            $parameters = $parameters->get();
+        }
+
+        return response()->json($parameters, 200);
     }
 
     /**
