@@ -26,7 +26,6 @@ class CarModelController extends Controller
 
         //get attr to brand
         if ($request->has('attribute_brand')) {
-            //pegando param do uri
             $attribute_brand = $request->attribute_brand;
             $parameters = $this->carModel->with('brand:id,' . $attribute_brand);
 
