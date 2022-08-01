@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand;
+use App\Repositories\BrandRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -18,12 +19,34 @@ class BrandController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $brands = $this->brand->with('carModel')->get();
-        return response()->json($brands, 200);
+
+        $brandRepository = new BrandRepository($this->brand);
+
+        //get carModel attributes
+        if ($request->has('attribute_car_model')) {
+            $attributes = 'carModel:id,' . $request->attribute_car_model;
+            $brandRepository->selectAttributes($attributes);
+        } else {
+            $brandRepository->selectAttributes('carModel');
+        }
+
+        //multiple filter
+        if ($request->has('filter')) {
+            $brandRepository->filter($request->filter);
+
+        }
+
+        //get brand attributes
+        if ($request->has('params')) {
+            $brandRepository->selectParams($request->params);
+        }
+
+        return response()->json($brandRepository->getAttribute(), 200);
     }
 
     /**
