@@ -14,7 +14,7 @@ class CarModel extends Model
     public function rules()
     {
         return [
-            'brand_id' => 'exists:brands,id',
+            'brand_id' => 'required|exists:brands,id',
             'name' => 'required|unique:car_models,name,' . $this->id . '|min:3',
             'image' => 'required|file|mimes:png,jpg,jpeg',
             'num_doors' => 'required|integer|digits_between:1,5',

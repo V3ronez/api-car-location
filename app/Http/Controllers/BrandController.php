@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Storage;
 
 class BrandController extends Controller
 {
-    protected $brand;
 
     public function __construct(Brand $brand)
     {
