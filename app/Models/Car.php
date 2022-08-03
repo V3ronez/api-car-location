@@ -14,7 +14,7 @@ class Car extends Model
     {
         return [
             'car_model_id' => 'required|exists:car_models,id',
-            'license_plate' => 'required|unique',
+            'license_plate' => 'required|unique:cars',
             'available' => 'required|boolean',
             'km' => 'required|integer',
         ];
@@ -22,6 +22,6 @@ class Car extends Model
 
     public function carModel()
     {
-        return $this->belongsTo(Car::class);
+        return $this->belongsTo(CarModel::class);
     }
 }

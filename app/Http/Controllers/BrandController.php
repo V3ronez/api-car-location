@@ -27,8 +27,8 @@ class BrandController extends Controller
         $brandRepository = new BrandRepository($this->brand);
 
         //get carModel attributes
-        if ($request->has('attribute_car_model')) {
-            $attributes = 'carModel:id,' . $request->attribute_car_model;
+        if ($request->has('attributes')) {
+            $attributes = 'carModel:id,' . $request->attributes;
             $brandRepository->selectAttributes($attributes);
         } else {
             $brandRepository->selectAttributes('carModel');
@@ -72,7 +72,7 @@ class BrandController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  Interger $id
+     * @param  Integer $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -88,7 +88,7 @@ class BrandController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  Interger $id
+     * @param  Integer $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -131,7 +131,7 @@ class BrandController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  Interger $id
+     * @param  Integer $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -147,7 +147,7 @@ class BrandController extends Controller
         $brand->delete();
 
         return response()->json([
-            'Ok' => 'Brand deleted successfully',
+            'Success' => 'Brand deleted successfully',
             'Brand' => [
                 'id' => $brand->id,
                 'name' => $brand->name,

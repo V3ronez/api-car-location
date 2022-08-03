@@ -25,8 +25,8 @@ class CarController extends Controller
         $carRepository = new CarRepository($this->car);
 
         //get carModel attributes
-        if ($request->has('attribute_car_model')) {
-            $attribute = 'carModel:id,' . $request->attribute_car_model;
+        if ($request->has('attributes')) {
+            $attribute = 'carModel:id,' . $request->attributes;
             $carRepository->selectAttributes($attribute);
         } else {
             $carRepository->selectAttributes('carModel');
@@ -36,7 +36,6 @@ class CarController extends Controller
             $carRepository->filter($request->filter);
         }
 
-        //get brand attributes
         if ($request->has('params')) {
             $carRepository->selectParams($request->params);
         }
@@ -113,13 +112,13 @@ class CarController extends Controller
         $car->fill($request->all());
         $car->save();
 
-        return response()->json(['Success' => true, $car], 200);
+        return response()->json(['Success' => true, "Car" => $car], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  Interger  $id
+     * @param  Integer  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -131,7 +130,7 @@ class CarController extends Controller
         }
 
         return response()->json([
-            'Ok' => 'Brand deleted successfully',
+            'Success' => 'Car deleted successfully',
             'Car' => $car,
         ], 200);
     }

@@ -156,7 +156,7 @@ class CarModelController extends Controller
 
         $carModel->delete();
         return response()->json([
-            'Ok' => 'Car model deleted successfully',
+            'Success' => 'Car model deleted successfully',
             'car_model' => [
                 'id' => $carModel->id,
                 'name' => $carModel->name,

@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 abstract class AbstractRepository
 {
 
-    public function __construct(Model $brand)
+    public function __construct(Model $model)
     {
-        $this->brand = $brand;
+        $this->model = $model;
     }
 
     public function selectAttributes($attributes): void
     {
-        $this->brand = $this->brand->with($attributes);
+        $this->model = $this->model->with($attributes);
     }
 
     public function filter($filter): void
@@ -22,17 +22,17 @@ abstract class AbstractRepository
         $filter = explode(';', $filter);
         foreach ($filter as $key => $value) {
             $condition = explode(':', $value);
-            $this->brand = $this->brand->where($condition[0], $condition[1], $condition[2]);
+            $this->model = $this->model->where($condition[0], $condition[1], $condition[2]);
         }
     }
 
     public function selectParams($params): void
     {
-        $this->brand = $this->brand->selectRaw($params);
+        $this->model = $this->model->selectRaw($params);
     }
 
     public function getAttribute()
     {
-        return $this->brand->get();
+        return $this->model->get();
     }
 }
