@@ -48,7 +48,7 @@
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Vehicles</a>
                                 <div class="dropdown-menu">
                                     <a href="#" class="dropdown-item">Car</a>
-                                    <a href="#" class="dropdown-item">Brands</a>
+                                    <a href="{{ route('brands') }}" class="dropdown-item">Brands</a>
                                     <a href="#" class="dropdown-item">Models</a>
                                 </div>
                             </li>
@@ -95,7 +95,14 @@
                 </div>
             </div>
         </nav>
-
+        @auth
+            <nav style="--bs-breadcrumb-divider: '');" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ Route::currentRouteName() }}</li>
+                </ol>
+            </nav>
+        @endauth
         <main class="py-4">
             @yield('content')
         </main>
