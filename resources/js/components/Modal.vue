@@ -12,7 +12,7 @@
                     <slot name="content-body"></slot>
                 </div>
                 <div class="modal-footer">
-                  <slot name="footer-modal"></slot>
+                    <slot name="footer-modal"></slot>
                 </div>
             </div>
         </div>
@@ -21,6 +21,6 @@
 
 <script>
 export default {
-props: ['id', 'title']
+    props: ['id', 'title']
 }
 </script>

@@ -2065,6 +2065,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 //
 //
 //
@@ -2126,7 +2128,51 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({});
+//
+//
+//
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  computed: {
+    token: function token() {
+      var token = document.cookie.split(';').find(function (index) {
+        return index.includes('token=');
+      });
+      token = token.split('=')[1];
+      token = "Bearer ".concat(token);
+      return token;
+    }
+  },
+  data: function data() {
+    return {
+      urlBase: 'http://localhost:8000/api/v1/brand',
+      nameBrand: '',
+      imageBrand: []
+    };
+  },
+  methods: {
+    loadImage: function loadImage(event) {
+      this.imageBrand = event.target.files;
+    },
+    save: function save() {
+      var formData = new FormData();
+      formData.append('name', this.nameBrand);
+      formData.append('image', this.imageBrand[0]);
+      var config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Accept': 'application/json',
+          'Authorization': this.token
+        }
+      };
+      axios__WEBPACK_IMPORTED_MODULE_0___default().post(this.urlBase, formData, config).then(function (response) {
+        console.log(response);
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    }
+  }
+});
 
 /***/ }),
 
@@ -38469,11 +38515,28 @@ var render = function () {
                   },
                   [
                     _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.nameBrand,
+                          expression: "nameBrand",
+                        },
+                      ],
                       staticClass: "form-control",
                       attrs: {
                         type: "text",
                         id: "brandName",
                         "aria-describedby": "brandNameHelp",
+                      },
+                      domProps: { value: _vm.nameBrand },
+                      on: {
+                        input: function ($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.nameBrand = $event.target.value
+                        },
                       },
                     }),
                   ]
@@ -38497,6 +38560,11 @@ var render = function () {
                         id: "brandImage",
                         "aria-describedby": "brandImageHelp",
                       },
+                      on: {
+                        change: function ($event) {
+                          return _vm.loadImage($event)
+                        },
+                      },
                     }),
                   ]
                 ),
@@ -38519,7 +38587,15 @@ var render = function () {
                 _vm._v(" "),
                 _c(
                   "button",
-                  { staticClass: "btn btn-primary", attrs: { type: "button" } },
+                  {
+                    staticClass: "btn btn-primary",
+                    attrs: { type: "button" },
+                    on: {
+                      click: function ($event) {
+                        return _vm.save()
+                      },
+                    },
+                  },
                   [_vm._v("Add")]
                 ),
               ]
@@ -51066,6 +51142,18 @@ module.exports = JSON.parse('{"name":"axios","version":"0.21.4","description":"P
 /******/ 				}
 /******/ 			}
 /******/ 			return result;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
 /******/ 		};
 /******/ 	})();
 /******/ 	
