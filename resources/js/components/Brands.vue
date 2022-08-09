@@ -40,6 +40,12 @@
         </div>
         <!-- Modal -->
         <modal-component id="modalBrand" title="Add new brand">
+            <template v-slot:alert>
+                <alert-component style-alert="success" :details="messageResponse" title="Success brand register"
+                    v-if="statusResponse == 'ok'"></alert-component>
+                <alert-component style-alert="danger" :details="messageResponse" title="Error brand register"
+                    v-if="statusResponse == 'error'"></alert-component>
+            </template>
             <template v-slot:content-body>
                 <input-container-component id="brandName" title="Brand name" id-help="brandNameHelp"
                     text-help="ex: Ford">
@@ -57,6 +63,7 @@
                 <button type="button" class="btn btn-primary" @click="save()">Add</button>
             </template>
         </modal-component>
+
         <!-- end modal -->
     </div>
 
@@ -67,6 +74,10 @@ import axios from 'axios';
 
 
 export default {
+    mounted() {
+        this.getBrands();
+    },
+
     computed: {
         token() {
             let token = document.cookie.split(';').find(index => {
@@ -79,15 +90,29 @@ export default {
     },
     data() {
         return {
-            urlBase: 'http://localhost:8000/api/v1/brand',
+            uriBase: 'http://localhost:8000/api/v1/brand',
+            brands: [],
             nameBrand: '',
-            imageBrand: []
+            imageBrand: [],
+            statusResponse: '',
+            messageResponse: {},
         }
     },
     methods: {
+        getBrands() {
+            axios.get(this.uriBase)
+                .then(response => {
+                    this.brands = response.data
+                })
+                .catch(errors => {
+                    console.log(errors)
+                })
+        },
+
         loadImage(event) {
             this.imageBrand = event.target.files
         },
+
         save() {
             let formData = new FormData();
             formData.append('name', this.nameBrand);
@@ -100,12 +125,20 @@ export default {
                     'Authorization': this.token,
                 }
             }
-            axios.post(this.urlBase, formData, config)
+
+            axios.post(this.uriBase, formData, config)
                 .then(response => {
-                    console.log(response)
+                    this.statusResponse = 'ok';
+                    this.messageResponse = {
+                        message: 'Brand: ' + response.data.brand.name + ' register successfully'
+                    }
                 })
-                .catch(error => {
-                    console.log(error);
+                .catch(errors => {
+                    this.statusResponse = 'error';
+                    this.messageResponse = {
+                        message: errors.response.data.message,
+                        data: errors.response.data.errors
+                    }
                 })
         }
     }
