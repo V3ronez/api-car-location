@@ -28,7 +28,7 @@
                 <!-- card list brands -->
                 <card-component title="Brands Relationship">
                     <template v-slot:content-body>
-                        <table-component></table-component>
+                        <table-component :data="brands" :title="['ID','Name', 'Image']"></table-component>
                     </template>
                     <template v-slot:footer>
                         <button type="button" class="btn btn-dark btn-sm float-right" data-toggle="modal"
@@ -100,7 +100,13 @@ export default {
     },
     methods: {
         getBrands() {
-            axios.get(this.uriBase)
+            let config = {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': this.token,
+                }
+            }
+            axios.get(this.uriBase, config)
                 .then(response => {
                     this.brands = response.data
                 })
