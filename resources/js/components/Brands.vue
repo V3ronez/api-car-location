@@ -28,12 +28,28 @@
                 <!-- card list brands -->
                 <card-component title="Brands Relationship">
                     <template v-slot:content-body>
-                        <table-component :data="brands" :title="['ID','Name', 'Image']"></table-component>
+                        <table-component :data="brands.data" :titles="{
+                            id: {title:'Id', type:'text'},
+                            name: {title: 'Name', type:'text'},
+                            image: {title: 'Image', type: 'image'},
+                            created_at: {title: 'Created at', type: 'date'}
+                        }"></table-component>
                     </template>
+                    <!-- footer -->
                     <template v-slot:footer>
-                        <button type="button" class="btn btn-dark btn-sm float-right" data-toggle="modal"
-                            data-target="#modalBrand">Add</button>
+                        <div class="row">
+                            <div class="col-10">
+                                <paginate-component>
+                                    <li v-for="(link, key) in brands.links" :key="key"  class="page-item"><a class="page-link" href="#" v-html="link.label"></a></li>
+                                </paginate-component>
+                            </div>
+                            <div class="col">
+                                <button type="button" class="btn btn-dark btn-sm float-right" data-toggle="modal"
+                                data-target="#modalBrand">Add</button>
+                            </div>
+                        </div>
                     </template>
+                        <!-- end footer -->
                 </card-component>
                 <!-- end card list brands -->
             </div>
@@ -91,7 +107,7 @@ export default {
     data() {
         return {
             uriBase: 'http://localhost:8000/api/v1/brand',
-            brands: [],
+            brands: {data:[]},
             nameBrand: '',
             imageBrand: [],
             statusResponse: '',
@@ -111,7 +127,7 @@ export default {
                     this.brands = response.data
                 })
                 .catch(errors => {
-                    console.log(errors)
+                    console.log(errors);
                 })
         },
 

@@ -45,7 +45,7 @@ class BrandController extends Controller
             $brandRepository->selectParams($request->params);
         }
 
-        return response()->json($brandRepository->getAttribute(), 200);
+        return response()->json($brandRepository->getPaginate(3), 200);
     }
 
     /**

@@ -12,12 +12,12 @@ abstract class AbstractRepository
         $this->model = $model;
     }
 
-    public function selectAttributes($attributes): void
+    public function selectAttributes(string $attributes): void
     {
         $this->model = $this->model->with($attributes);
     }
 
-    public function filter($filter): void
+    public function filter(string $filter): void
     {
         $filter = explode(';', $filter);
         foreach ($filter as $key => $value) {
@@ -26,7 +26,7 @@ abstract class AbstractRepository
         }
     }
 
-    public function selectParams($params): void
+    public function selectParams(string $params): void
     {
         $this->model = $this->model->selectRaw($params);
     }
@@ -34,5 +34,10 @@ abstract class AbstractRepository
     public function getAttribute()
     {
         return $this->model->get();
+    }
+
+    public function getPaginate(int $page)
+    {
+        return $this->model->paginate($page);
     }
 }
