@@ -9,31 +9,37 @@
                             <div class="mb-3 col">
                                 <input-container-component id="inputId" title="ID" id-help="idHelp"
                                     text-help="Search for brand id">
-                                    <input type="number" class="form-control" id="inputId" aria-describedby="idHelp">
+                                    <input type="number" class="form-control" id="inputId" v-model="query.id"
+                                        aria-describedby="idHelp">
                                 </input-container-component>
                             </div>
                             <div class="mb-3 col">
                                 <input-container-component id="nameInput" title="Brand name" id-help="nameHelp"
                                     text-help="Search for brand name">
-                                    <input type="text" class="form-control" id="inputName" aria-describedby="nameHelp">
+                                    <input type="text" class="form-control" id="inputName" v-model="query.name"
+                                        aria-describedby="nameHelp">
                                 </input-container-component>
                             </div>
                         </div>
                     </template>
                     <template v-slot:footer>
-                        <button type="submit" class="btn btn-dark btn-sm float-right">Search</button>
+                        <button type="submit" @click="search" class="btn btn-dark btn-sm float-right">Search</button>
                     </template>
                 </card-component>
                 <!-- end card search -->
                 <!-- card list brands -->
                 <card-component title="Brands Relationship">
                     <template v-slot:content-body>
-                        <table-component :data="brands.data" :titles="{
-                            id: {title:'Id', type:'text'},
-                            name: {title: 'Name', type:'text'},
-                            image: {title: 'Image', type: 'image'},
-                            created_at: {title: 'Created at', type: 'date'}
-                        }"></table-component>
+                        <table-component :data="brands.data" :view="{
+                            visible: true,
+                            dataToggle: 'modal',
+                            dataTarget: '#modalBrandView'
+                        }" :update="true" :remove="true" :titles="{
+    id: { title: 'Id', type: 'text' },
+    name: { title: 'Name', type: 'text' },
+    image: { title: 'Image', type: 'image' },
+    created_at: { title: 'Created at', type: 'date' }
+}"></table-component>
                     </template>
                     <!-- footer -->
                     <template v-slot:footer>
@@ -41,23 +47,23 @@
                             <div class="col-10">
                                 <paginate-component>
                                     <li v-for="(link, key) in brands.links" :key="key" @click="paginate(link)"
-                                        :class="link.active ? 'page-item active': 'page-item'">
+                                        :class="link.active ? 'page-item active' : 'page-item'">
                                         <a class="page-link" v-html="link.label"></a>
                                     </li>
                                 </paginate-component>
                             </div>
                             <div class="col">
                                 <button type="button" class="btn btn-dark btn-sm float-right" data-toggle="modal"
-                                data-target="#modalBrand">Add</button>
+                                    data-target="#modalBrand">Add brand</button>
                             </div>
                         </div>
                     </template>
-                        <!-- end footer -->
+                    <!-- end footer -->
                 </card-component>
                 <!-- end card list brands -->
             </div>
         </div>
-        <!-- Modal -->
+        <!-- Modal include brand-->
         <modal-component id="modalBrand" title="Add new brand">
             <template v-slot:alert>
                 <alert-component style-alert="success" :details="messageResponse" title="Success brand register"
@@ -82,7 +88,21 @@
                 <button type="button" class="btn btn-primary" @click="save()">Add</button>
             </template>
         </modal-component>
-        <!-- end modal -->
+        <!-- end modal include brand -->
+        <!-- start modal view brand -->
+        <modal-component id="modalBrandView" title="View brand">
+            <template v-slot:alert>
+                teste
+            </template>
+            <template v-slot:content-body>
+                teste
+            </template>
+            <template v-slot:footer-modal>
+                <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" @click="save()">Add</button>
+            </template>
+        </modal-component>
+        <!-- end modal view brand -->
     </div>
 
 </template>
@@ -109,28 +129,52 @@ export default {
     data() {
         return {
             uriBase: 'http://localhost:8000/api/v1/brand',
-            brands: {data:[]},
+            urnPaginate: '',
+            urnFilter: '',
+            brands: { data: [] },
             nameBrand: '',
             imageBrand: [],
             statusResponse: '',
             messageResponse: {},
+            query: { id: '', name: '' }
         }
     },
     methods: {
         getBrands() {
+            let url = `${this.uriBase}?${this.urnPaginate}${this.urnFilter}`
             let config = {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': this.token,
                 }
             }
-            axios.get(this.uriBase, config)
+            axios.get(url, config)
                 .then(response => {
                     this.brands = response.data
                 })
                 .catch(errors => {
                     console.log(errors);
                 })
+        },
+        search() {
+            let params = '';
+            for (let key in this.query) {
+                if (this.query[key]) {
+                    if (params != '') {
+                        params += ';';
+                    }
+                    params += key + ':like:' + this.query[key];
+                }
+            }
+
+            if (params != '') {
+                this.urnPaginate = 'page=1';
+                this.urnFilter = '&filter=' + params + '%';
+            } else {
+                this.urnFilter = '';
+            }
+
+            this.getBrands();
         },
 
         loadImage(event) {
@@ -167,8 +211,8 @@ export default {
         },
 
         paginate(link) {
-            if(link.url){
-                this.uriBase = link.url;
+            if (link.url) {
+                this.urnPaginate = link.url.split('?')[1];
                 this.getBrands();
             }
         }
