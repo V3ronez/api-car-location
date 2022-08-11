@@ -40,7 +40,10 @@
                         <div class="row">
                             <div class="col-10">
                                 <paginate-component>
-                                    <li v-for="(link, key) in brands.links" :key="key"  class="page-item"><a class="page-link" href="#" v-html="link.label"></a></li>
+                                    <li v-for="(link, key) in brands.links" :key="key" @click="paginate(link)"
+                                        :class="link.active ? 'page-item active': 'page-item'">
+                                        <a class="page-link" v-html="link.label"></a>
+                                    </li>
                                 </paginate-component>
                             </div>
                             <div class="col">
@@ -79,7 +82,6 @@
                 <button type="button" class="btn btn-primary" @click="save()">Add</button>
             </template>
         </modal-component>
-
         <!-- end modal -->
     </div>
 
@@ -162,6 +164,13 @@ export default {
                         data: errors.response.data.errors
                     }
                 })
+        },
+
+        paginate(link) {
+            if(link.url){
+                this.uriBase = link.url;
+                this.getBrands();
+            }
         }
     }
 }
