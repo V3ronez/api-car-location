@@ -16,9 +16,10 @@
                 </td>
                 <td v-if="view || update || remove">
                     <button v-if="view.visible" class="btn btn-outline-primary sm" :data-toggle="view.dataToggle"
-                        :data-target="view.dataTarget">View</button>
+                        :data-target="view.dataTarget" @click="setStore(obj)">View</button>
                     <button v-if="update" class="btn btn-outline-primary sm">Update</button>
-                    <button v-if="remove" class="btn btn-outline-danger sm">Remove</button>
+                    <button v-if="remove" :data-toggle="remove.dataToggle" :data-target="remove.dataTarget"
+                        class="btn btn-outline-danger sm" @click="setStore(obj)">Remove</button>
                 </td>
             </tr>
         </tbody>
@@ -28,6 +29,11 @@
 <script>
 export default {
     props: ['data', 'titles', 'view', 'update', 'remove'],
+    methods: {
+        setStore(obj) {
+            this.$store.state.item = obj
+        }
+    },
     computed: {
         filterData() {
             let keysTitles = Object.keys(this.titles);

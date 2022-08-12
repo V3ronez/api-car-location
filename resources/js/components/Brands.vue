@@ -34,7 +34,11 @@
                             visible: true,
                             dataToggle: 'modal',
                             dataTarget: '#modalBrandView'
-                        }" :update="true" :remove="true" :titles="{
+                        }" :update="true" :remove="{
+    visible: true,
+    dataToggle: 'modal',
+    dataTarget: '#modalDeleteBrand'
+}" :titles="{
     id: { title: 'Id', type: 'text' },
     name: { title: 'Name', type: 'text' },
     image: { title: 'Image', type: 'image' },
@@ -91,11 +95,22 @@
         <!-- end modal include brand -->
         <!-- start modal view brand -->
         <modal-component id="modalBrandView" title="View brand">
-            <template v-slot:alert>
-                teste
-            </template>
             <template v-slot:content-body>
-                teste
+                <input-container-component title="ID">
+                    <input type="text" class="form-control" :value="$store.state.item.id" disabled>
+                </input-container-component>
+                <input-container-component title="Brand">
+                    <input type="text" class="form-control" :value="$store.state.item.name" disabled>
+                </input-container-component>
+                <input-container-component title="Logo">
+                    <div col="row">
+                        <img col="5" v-if="$store.state.item.image" :src="'\\storage\\' + $store.state.item.image"
+                            style="max-width: 50px;">
+                    </div>
+                </input-container-component>
+                <input-container-component title="Created_at">
+                    <input type="text" class="form-control" :value="$store.state.item.created_at" disabled>
+                </input-container-component>
             </template>
             <template v-slot:footer-modal>
                 <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
@@ -103,8 +118,23 @@
             </template>
         </modal-component>
         <!-- end modal view brand -->
+        <!-- start modal remove brand -->
+        <modal-component id="modalDeleteBrand" title="Delete brand">
+            <template v-slot:content-body>
+                <input-container-component title="ID">
+                    <input type="text" class="form-control" :value="$store.state.item.id" disabled>
+                </input-container-component>
+                <input-container-component title="Brand">
+                    <input type="text" class="form-control" :value="$store.state.item.name" disabled>
+                </input-container-component>
+            </template>
+            <template v-slot:footer-modal>
+                <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" @click="deleteBrand()">Delete</button>
+            </template>
+        </modal-component>
+        <!-- end modal remove brand -->
     </div>
-
 </template>
 
 <script>

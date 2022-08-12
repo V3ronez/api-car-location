@@ -73,7 +73,7 @@ class CarController extends Controller
     public function show($id)
     {
         $car = $this->car->with('carModel')->find($id);
-        if($car === null) {
+        if ($car === null) {
             return response()->json(['Erro' => 'Car not found'], 404);
         }
         return response()->json($car, 200);
@@ -128,6 +128,8 @@ class CarController extends Controller
         if ($car === null) {
             return response()->json(['Erro' => 'Car not found'], 404);
         }
+
+        $car->delete();
 
         return response()->json([
             'Success' => 'Car deleted successfully',
