@@ -34,7 +34,11 @@
                             visible: true,
                             dataToggle: 'modal',
                             dataTarget: '#modalBrandView'
-                        }" :update="true" :remove="{
+                        }" :update="{
+    visible: true,
+    dataToggle: 'modal',
+    dataTarget: '#modalBrandUpdate'
+}" :remove="{
     visible: true,
     dataToggle: 'modal',
     dataTarget: '#modalDeleteBrand'
@@ -118,6 +122,31 @@
             </template>
         </modal-component>
         <!-- end modal view brand -->
+        <!-- start modal view brand update -->
+        <modal-component id="modalBrandUpdate" title="Update brand">
+            <template v-slot:alert>
+            </template>
+            <template v-slot:content-body>
+                <div class="form-group">
+                    <input-container-component id="updateBrandName" title="Update Brand name"
+                        id-help="updateBrandNameHelp" text-help="ex: Ford">
+                        <input type="text" class="form-control" id="updateBrand" v-model="$store.state.item.name"
+                            aria-describedby="updateBrandHelp">
+                    </input-container-component>
+                    <input-container-component id="updateBrandImage" title="Update Brand image"
+                        id-help="updateBrandHelp" text-help="allowed extensions: JPG, PNG, JPEG">
+                        <input type="file" class="form-control-file" id="updateBrandImage" @change="loadImage($event)"
+                            aria-describedby="brandImageHelp">
+                    </input-container-component>
+                </div>
+            </template>
+            <template v-slot:footer-modal>
+                <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" @click="updateBrand()">Update</button>
+                {{ $store.state.item }}
+            </template>
+        </modal-component>
+        <!-- end modal view brand update -->
         <!-- start modal remove brand -->
         <modal-component id="modalDeleteBrand" title="Delete brand">
             <template v-slot:alert>
@@ -194,6 +223,31 @@ export default {
                 })
         },
 
+        updateBrand() {
+            let formData = new FormData();
+            formData.append('_method', 'PATCH');
+            formData.append('name', this.$store.state.item.name);
+            formData.append('image', this.imageBrand[0]);
+
+            let url = this.uriBase + '/' + this.$store.state.item.id;
+            let config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Accept': 'application/json',
+                    'Authorization': this.token,
+                }
+            }
+
+            axios.post(url, formData, config)
+                .then(response => {
+                    console.log(response.data)
+                    this.getBrands();
+                })
+                .catch(errors => {
+                    console.log(errors);
+                })
+        },
+
         deleteBrand() {
             let confirmed = confirm('You sure to want delete this brand?');
             if (!confirmed) return;
@@ -211,11 +265,9 @@ export default {
             }
 
 
-
             axios.post(url, formData, config)
                 .then(response => {
                     this.$store.state.feedbackApi.status = 'success';
-                    // this.$store.state.feedbackApi.message = 'Brand deleted successfully'
                     this.$store.state.feedbackApi.message = response.data.Success
                     this.getBrands();
                 })
@@ -270,6 +322,7 @@ export default {
                     this.messageResponse = {
                         message: 'Brand: ' + response.data.brand.name + ' register successfully'
                     }
+                    this.getBrands();
                 })
                 .catch(errors => {
                     this.statusResponse = 'error';

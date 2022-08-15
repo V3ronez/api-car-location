@@ -3,7 +3,7 @@
         <thead>
             <tr>
                 <th scope="col" v-for="(value, key) in titles" :key="key">{{ value.title }}</th>
-                <th v-if="view.visible || update || remove"></th>
+                <th v-if="view.visible || update.visible || remove"></th>
             </tr>
         </thead>
         <tbody>
@@ -14,10 +14,11 @@
                             height="30"></span>
                     <span v-if="titles[keyObj].type == 'date'">{{ '...' + valueObj }}</span>
                 </td>
-                <td v-if="view || update || remove">
+                <td v-if="view.visible || update.visible || remove.visible">
                     <button v-if="view.visible" class="btn btn-outline-primary sm" :data-toggle="view.dataToggle"
                         :data-target="view.dataTarget" @click="setStore(obj)">View</button>
-                    <button v-if="update" class="btn btn-outline-primary sm">Update</button>
+                    <button v-if="update.visible" class="btn btn-outline-primary sm" :data-toggle="update.dataToggle"
+                        :data-target="update.dataTarget" @click="setStore(obj)">Update</button>
                     <button v-if="remove" :data-toggle="remove.dataToggle" :data-target="remove.dataTarget"
                         class="btn btn-outline-danger sm" @click="setStore(obj)">Remove</button>
                 </td>
@@ -31,6 +32,9 @@ export default {
     props: ['data', 'titles', 'view', 'update', 'remove'],
     methods: {
         setStore(obj) {
+            this.$store.state.feedbackApi.status = '';
+            this.$store.state.feedbackApi.message = '';
+
             this.$store.state.item = obj
         }
     },
