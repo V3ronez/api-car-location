@@ -120,7 +120,13 @@
         <!-- end modal view brand -->
         <!-- start modal remove brand -->
         <modal-component id="modalDeleteBrand" title="Delete brand">
-            <template v-slot:content-body>
+            <template v-slot:alert>
+                <alert-component styleAlert="success" title="Success" :details="$store.state.feedbackApi"
+                    v-if="$store.state.feedbackApi.status == 'success'"></alert-component>
+                <alert-component styleAlert="danger" title="Erro" :details="$store.state.feedbackApi"
+                    v-if="$store.state.feedbackApi.status == 'erro'"></alert-component>
+            </template>
+            <template v-slot:content-body v-if="$store.state.feedbackApi.status != 'success'">
                 <input-container-component title="ID">
                     <input type="text" class="form-control" :value="$store.state.item.id" disabled>
                 </input-container-component>
@@ -130,7 +136,8 @@
             </template>
             <template v-slot:footer-modal>
                 <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-danger" @click="deleteBrand()">Delete</button>
+                <button type="button" class="btn btn-danger" @click="deleteBrand()"
+                    v-if="$store.state.feedbackApi.status != 'success'">Delete</button>
             </template>
         </modal-component>
         <!-- end modal remove brand -->
@@ -186,6 +193,39 @@ export default {
                     console.log(errors);
                 })
         },
+
+        deleteBrand() {
+            let confirmed = confirm('You sure to want delete this brand?');
+            if (!confirmed) return;
+
+            let url = this.uriBase + '/' + this.$store.state.item.id
+
+            let formData = new FormData();
+            formData.append('_method', 'DELETE');
+
+            let config = {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': this.token
+                }
+            }
+
+
+
+            axios.post(url, formData, config)
+                .then(response => {
+                    this.$store.state.feedbackApi.status = 'success';
+                    // this.$store.state.feedbackApi.message = 'Brand deleted successfully'
+                    this.$store.state.feedbackApi.message = response.data.Success
+                    this.getBrands();
+                })
+                .catch(e => {
+                    this.$store.state.feedbackApi.status = 'erro';
+                    this.$store.state.feedbackApi.message = 'Erro to delete brand. Please, try again'
+                });
+
+        },
+
         search() {
             let params = '';
             for (let key in this.query) {

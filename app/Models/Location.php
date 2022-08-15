@@ -19,6 +19,7 @@ class Location extends Model
         'km_final'
     ];
     public function rules()
-    {return [];
+    {
+        return [];
     }
 }
