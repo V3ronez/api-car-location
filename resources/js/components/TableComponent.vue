@@ -12,7 +12,7 @@
                     <span v-if="titles[keyObj].type == 'text'">{{ valueObj }}</span>
                     <span v-if="titles[keyObj].type == 'image'"><img :src="'\\storage\\' + valueObj" width="35"
                             height="30"></span>
-                    <span v-if="titles[keyObj].type == 'date'">{{ '...' + valueObj }}</span>
+                    <span v-if="titles[keyObj].type == 'date'">{{ valueObj | formatDate }}</span>
                 </td>
                 <td v-if="view.visible || update.visible || remove.visible">
                     <button v-if="view.visible" class="btn btn-outline-primary sm" :data-toggle="view.dataToggle"
@@ -30,10 +30,18 @@
 <script>
 export default {
     props: ['data', 'titles', 'view', 'update', 'remove'],
+
+    filters: {
+        formatDate(date) {
+           
+        }
+    },
+
     methods: {
         setStore(obj) {
             this.$store.state.feedbackApi.status = '';
             this.$store.state.feedbackApi.message = '';
+            this.$store.state.feedbackApi.data = '';
 
             this.$store.state.item = obj
         }

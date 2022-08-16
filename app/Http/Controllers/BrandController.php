@@ -37,7 +37,6 @@ class BrandController extends Controller
         //multiple filter
         if ($request->has('filter')) {
             $brandRepository->filter($request->filter);
-
         }
 
         //get brand attributes
@@ -108,23 +107,18 @@ class BrandController extends Controller
                 }
             }
             $request->validate($dinamicRules);
-
         } else {
             $request->validate($brand->rules());
         }
 
+        $brand->fill($request->all());
         if ($request->file('image')) {
-            //remove old image
             Storage::disk('public')->delete($brand->image);
             $image = $request->file('image');
             $imageUrn = $image->store('images', 'public');
+            $brand->image = $imageUrn;
         }
-
-        $brand->fill($request->all());
-        $request->file('image') ? $imageUrn : '';
-
         $brand->save();
-
         return response()->json(['Success' => true, $brand], 200);
     }
 

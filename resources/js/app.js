@@ -18,6 +18,7 @@ const store = new Vuex.Store({
         feedbackApi: {
             status: '',
             message: '',
+            data: '',
         }
     }
 });

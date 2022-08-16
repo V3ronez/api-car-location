@@ -125,6 +125,11 @@
         <!-- start modal view brand update -->
         <modal-component id="modalBrandUpdate" title="Update brand">
             <template v-slot:alert>
+                <alert-component style-alert="success" :details="$store.state.feedbackApi"
+                    title="Success brand register" v-if="$store.state.feedbackApi.status == 'success'">
+                </alert-component>
+                <alert-component style-alert="danger" :details="$store.state.feedbackApi" title="Error brand register"
+                    v-if="$store.state.feedbackApi.status == 'erro'"></alert-component>
             </template>
             <template v-slot:content-body>
                 <div class="form-group">
@@ -143,7 +148,6 @@
             <template v-slot:footer-modal>
                 <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" @click="updateBrand()">Update</button>
-                {{ $store.state.item }}
             </template>
         </modal-component>
         <!-- end modal view brand update -->
@@ -227,7 +231,9 @@ export default {
             let formData = new FormData();
             formData.append('_method', 'PATCH');
             formData.append('name', this.$store.state.item.name);
-            formData.append('image', this.imageBrand[0]);
+            if (this.imageBrand[0]) {
+                formData.append('image', this.imageBrand[0]);
+            }
 
             let url = this.uriBase + '/' + this.$store.state.item.id;
             let config = {
@@ -240,11 +246,15 @@ export default {
 
             axios.post(url, formData, config)
                 .then(response => {
-                    console.log(response.data)
+                    this.$store.state.feedbackApi.status = 'success';
+                    this.$store.state.feedbackApi.message = 'Brand updated succefully'
+                    updateBrandImage.value = '';
                     this.getBrands();
                 })
                 .catch(errors => {
-                    console.log(errors);
+                    this.$store.state.feedbackApi.status = 'erro';
+                    this.$store.state.feedbackApi.message = errors.response.data.message
+                    this.$store.state.feedbackApi.data = errors.response.data.errors
                 })
         },
 
