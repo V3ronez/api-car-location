@@ -31,12 +31,6 @@
 export default {
     props: ['data', 'titles', 'view', 'update', 'remove'],
 
-    filters: {
-        formatDate(date) {
-           
-        }
-    },
-
     methods: {
         setStore(obj) {
             this.$store.state.feedbackApi.status = '';
