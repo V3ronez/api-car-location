@@ -186,16 +186,6 @@ export default {
         this.getBrands();
     },
 
-    computed: {
-        token() {
-            let token = document.cookie.split(';').find(index => {
-                return index.includes('token=');
-            })
-            token = token.split('=')[1];
-            token = `Bearer ${token}`;
-            return token;
-        }
-    },
     data() {
         return {
             uriBase: 'http://localhost:8000/api/v1/brand',
@@ -212,13 +202,8 @@ export default {
     methods: {
         getBrands() {
             let url = `${this.uriBase}?${this.urnPaginate}${this.urnFilter}`
-            let config = {
-                headers: {
-                    'Accept': 'application/json',
-                    'Authorization': this.token,
-                }
-            }
-            axios.get(url, config)
+
+            axios.get(url)
                 .then(response => {
                     this.brands = response.data
                 })
@@ -239,12 +224,10 @@ export default {
             let config = {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    'Accept': 'application/json',
-                    'Authorization': this.token,
                 }
             }
 
-            axios.post(url, formData, config)
+            axios.post(url, formData)
                 .then(response => {
                     this.$store.state.feedbackApi.status = 'success';
                     this.$store.state.feedbackApi.message = 'Brand updated succefully'
@@ -267,15 +250,7 @@ export default {
             let formData = new FormData();
             formData.append('_method', 'DELETE');
 
-            let config = {
-                headers: {
-                    'Accept': 'application/json',
-                    'Authorization': this.token
-                }
-            }
-
-
-            axios.post(url, formData, config)
+            axios.post(url, formData)
                 .then(response => {
                     this.$store.state.feedbackApi.status = 'success';
                     this.$store.state.feedbackApi.message = response.data.Success
@@ -320,9 +295,7 @@ export default {
 
             let config = {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'Accept': 'application/json',
-                    'Authorization': this.token,
+                    'Content-Type': 'multipart/form-data'
                 }
             }
 
